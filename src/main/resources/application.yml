@@ -1,0 +1,27 @@
+server:
+  port: 50001
+spring:
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      client:
+        registration:
+          qq:
+            provider: qq
+            client-id: 1
+            client-secret: 1
+            client-authentication-method: 1
+            authorization-grant-type: 1
+            redirect-uri: https://1
+            scope: example
+            client-name: qq
+          github:
+            client-id: id
+            client-secret: secret
+            redirect-uri:
+        provider:
+          qq:
+            authorization-uri: https://graph.qq.com/oauth2.0/authorize
+            token-uri: https://graph.qq.com/oauth2.0/token
+            userInfoUri: https://graph.qq.com/user/get_user_info
