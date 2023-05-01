@@ -85,19 +85,19 @@ public class SecurityConfig {
 //                .and()
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(withDefaults())
-                .oauth2Client(oauth2 -> oauth2
-                        .authorizationCodeGrant(codeGrant -> codeGrant
-                                .authorizationRequestRepository(this.authorizationRequestRepository())
-                        )
-                )
-                .oauth2Login(builder -> builder.authorizationEndpoint().authorizationRequestRepository(this.authorizationRequestRepository()))
+//                .oauth2Client(oauth2 -> oauth2
+//                        .authorizationCodeGrant(codeGrant -> codeGrant
+//                                .authorizationRequestRepository(this.authorizationRequestRepository())
+//                        )
+//                )
+//                .oauth2Login(builder -> builder.authorizationEndpoint().authorizationRequestRepository(this.authorizationRequestRepository()))
                 .build();
     }
 
-    @Bean
-    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
-        return new InMemoryOAuth2AuthorizationRequestRepository();
-    }
+//    @Bean
+//    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+//        return new InMemoryOAuth2AuthorizationRequestRepository();
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
