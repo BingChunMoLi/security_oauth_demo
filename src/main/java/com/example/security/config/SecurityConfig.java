@@ -1,6 +1,5 @@
 package com.example.security.config;
 
-
 import com.example.security.respository.InMemoryOAuth2AuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -91,12 +90,12 @@ public class SecurityConfig {
                                 .authorizationRequestRepository(this.authorizationRequestRepository())
                         )
                 )
-                .oauth2Login()
-                .and()
+                .oauth2Login(builder -> builder.authorizationEndpoint().authorizationRequestRepository(this.authorizationRequestRepository()))
                 .build();
     }
 
-    private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+    @Bean
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
         return new InMemoryOAuth2AuthorizationRequestRepository();
     }
 

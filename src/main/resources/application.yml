@@ -19,7 +19,7 @@ spring:
           github:
             client-id: id
             client-secret: secret
-            redirect-uri:
+            redirect-uri: https://1
         provider:
           qq:
             authorization-uri: https://graph.qq.com/oauth2.0/authorize

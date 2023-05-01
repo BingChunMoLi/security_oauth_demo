@@ -2,11 +2,14 @@ package com.example.security.respository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.util.Assert;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * An implementation of an {@link AuthorizationRequestRepository} that stores
@@ -20,7 +23,7 @@ import org.springframework.util.Assert;
 public class InMemoryOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
     private static final String DEFAULT_AUTHORIZATION_REQUEST_ATTR_NAME = InMemoryOAuth2AuthorizationRequestRepository.class
             .getName() + ".AUTHORIZATION_REQUEST";
-    private final ThreadLocal<OAuth2AuthorizationRequest> threadLocal = new NamedThreadLocal<>(DEFAULT_AUTHORIZATION_REQUEST_ATTR_NAME);
+    private final Map<String, OAuth2AuthorizationRequest> OAUTH2_AUTHORIZATION_REQUEST_STORE_MAP = new ConcurrentHashMap<>();
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
@@ -29,7 +32,7 @@ public class InMemoryOAuth2AuthorizationRequestRepository implements Authorizati
         if (stateParameter == null) {
             return null;
         }
-        OAuth2AuthorizationRequest authorizationRequest = getAuthorizationRequest();
+        OAuth2AuthorizationRequest authorizationRequest = getAuthorizationRequest(stateParameter);
         return (authorizationRequest != null && stateParameter.equals(authorizationRequest.getState()))
                 ? authorizationRequest : null;
     }
@@ -44,7 +47,7 @@ public class InMemoryOAuth2AuthorizationRequestRepository implements Authorizati
         }
         String state = authorizationRequest.getState();
         Assert.hasText(state, "authorizationRequest.state cannot be empty");
-        threadLocal.set(authorizationRequest);
+        OAUTH2_AUTHORIZATION_REQUEST_STORE_MAP.put(state, authorizationRequest);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class InMemoryOAuth2AuthorizationRequestRepository implements Authorizati
         Assert.notNull(response, "response cannot be null");
         OAuth2AuthorizationRequest authorizationRequest = loadAuthorizationRequest(request);
         if (authorizationRequest != null) {
-            threadLocal.remove();
+            OAUTH2_AUTHORIZATION_REQUEST_STORE_MAP.remove(authorizationRequest.getState());
         }
         return authorizationRequest;
     }
@@ -67,7 +70,7 @@ public class InMemoryOAuth2AuthorizationRequestRepository implements Authorizati
         return request.getParameter(OAuth2ParameterNames.STATE);
     }
 
-    private OAuth2AuthorizationRequest getAuthorizationRequest() {
-        return threadLocal.get();
+    private OAuth2AuthorizationRequest getAuthorizationRequest(String state) {
+        return OAUTH2_AUTHORIZATION_REQUEST_STORE_MAP.get(state);
     }
 }
